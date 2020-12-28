@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">RadioFREQ</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_playing_bottom_menu">Playing</string>
+    <string name="nav_history">History</string>
+
+    <string name="history_long_Text">
+        This This This This This This This This This This This This This This This This This This This
+        This This This This This This This This This This This This This This This This This This This
+
+        IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS
+        IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS IS
+
+        The The The The The The The The The The The The The The The The The The The The The The The The
+        The The The The The The The The The The The The The The The The The The The The The The The The
+
+        Last Last Last Last Last Last Last Last Last Last Last Last Last Last Last Last Last Last Last
+        Last Last Last Last Last Last Last Last Last Last Last Last Last Last Last Last Last Last Last
+
+        Fragment Fragment Fragment Fragment Fragment Fragment Fragment Fragment Fragment Fragment Fragment
+        Fragment Fragment Fragment Fragment Fragment Fragment Fragment Fragment Fragment Fragment Fragment
+    </string>
 </resources>
