@@ -4,15 +4,17 @@ public class ParseItem {
     private String imgUrl;
     private String title;
     private String frequency;
+    private String playUrl;
 
     public ParseItem() {
 
     }
 
-    public ParseItem(String imgUrl, String title, String frequency) {
+    public ParseItem(String imgUrl, String title, String frequency, String playUrl) {
         this.imgUrl = imgUrl;
         this.title = title;
         this.frequency = frequency;
+        this.playUrl = playUrl;
     }
 
     public String getImgUrl() {
@@ -38,4 +40,10 @@ public class ParseItem {
     public void setFrequency(String frequency) {
         this.frequency = frequency;
     }
+
+    public String getPlayUrl() {
+        return playUrl;
+    }
+
+    public void setPlayUrl(String playUrl) { this.playUrl = playUrl; }
 }

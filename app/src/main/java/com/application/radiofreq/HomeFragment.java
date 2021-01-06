@@ -14,6 +14,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -49,7 +51,7 @@ public class HomeFragment extends Fragment implements LocationListener {
 
     private RecyclerView recyclerView;
     private ParseAdapter adapter;
-    private ArrayList<ParseItem> parseItems = new ArrayList<>();
+    private ArrayList<ParseItem> parseItems = new ArrayList<ParseItem>();
     private ProgressBar progressBar;
     TextView city;
     LocationManager locationManager;
@@ -149,6 +151,13 @@ public class HomeFragment extends Fragment implements LocationListener {
         }
     }
 
+    public static String stripAccents(String s)
+    {
+        s = Normalizer.normalize(s, Normalizer.Form.NFD);
+        s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        return s;
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         try {
@@ -156,7 +165,62 @@ public class HomeFragment extends Fragment implements LocationListener {
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
             city.setText(addresses.get(0).getLocality());
-            //locationCity = "timisoara"; //locationCity = addresses.get(0).getLocality().toLowerCase();
+
+            locationCity = addresses.get(0).getLocality().toLowerCase();
+
+            int SDK_INT = android.os.Build.VERSION.SDK_INT;
+            if (SDK_INT > 8)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            //your codes here
+
+        }
+
+            try {
+
+                String url = "http://radiomap.eu/ro/" + stripAccents(locationCity);
+                Document doc = Jsoup.connect(url).get();
+
+                Element table = doc.select("tbody").get(1);
+                Elements rows = table.select("tr");
+                for(int i = 2; i < rows.size() - 19; i++) {
+                    Element row = rows.get(i);
+
+                    Element freq = row.select("td").get(0);
+                    Element cols = row.select("td").get(1);
+
+                    String imgUrl = cols
+                            .select("img")
+                            .attr("src");
+                    String replaceImgUrl = imgUrl.replaceAll("\\.\\.", "");
+                    String imgUrlCompleted = "http://radiomap.eu" + replaceImgUrl;
+
+                    String playUrl = cols
+                            .select("a")
+                            .attr("href");
+                    String replacePlayUrl = playUrl.replaceAll("\\.\\.", "");
+                    String playUrlCompleted = "http://radiomap.eu" + replacePlayUrl;
+
+                    String radioName = cols
+                            .tagName("station")
+                            .text();
+
+                    String frequency = freq
+                            .tagName("td")
+                            .text();
+
+                    int maxLength = (radioName.length() < 24)?radioName.length():24;
+
+                    parseItems.add(new ParseItem(imgUrlCompleted, radioName.substring(0, maxLength), frequency, playUrlCompleted));
+                    Log.d("items", "img" + imgUrl + " . title: " + radioName);
+
+                    adapter.notifyDataSetChanged();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -184,14 +248,14 @@ public class HomeFragment extends Fragment implements LocationListener {
         protected void onPreExecute() {
             super.onPreExecute();
             progressBar.setVisibility(View.VISIBLE);
-            progressBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in)); //??
+            progressBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             progressBar.setVisibility(View.GONE);
-            progressBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out)); //??
+            progressBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
             adapter.notifyDataSetChanged();
         }
 
@@ -202,38 +266,40 @@ public class HomeFragment extends Fragment implements LocationListener {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            try {
-                String url = "http://radiomap.eu/ro/timisoara";
-                Document doc = Jsoup.connect(url).get();
-
-                Element table = doc.select("tbody").get(1);
-                Elements rows = table.select("tr");
-                for(int i = 2; i < rows.size() - 19; i++) {
-                    Element row = rows.get(i);
-
-                    Element freq = row.select("td").get(0);
-                    Element cols = row.select("td").get(1);
-
-                    String imgUrl = cols
-                            .select("img")
-                            .attr("src");
-                    String replaceImgUrl = imgUrl.replaceAll("\\.\\.", "");
-                    String imgUrlCompleted = "http://radiomap.eu" + replaceImgUrl;
-
-                    String radioName = cols
-                            .tagName("station")
-                            .text();
-
-                    String frequency = freq
-                            .tagName("td")
-                            .text();
-
-                    parseItems.add(new ParseItem(imgUrlCompleted, radioName, frequency));
-                    Log.d("items", "img" + imgUrl + " . title: " + radioName);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                String url = "http://radiomap.eu/ro/timisoara";
+//                Document doc = Jsoup.connect(url).get();
+//
+//                Element table = doc.select("tbody").get(1);
+//                Elements rows = table.select("tr");
+//                for(int i = 2; i < rows.size() - 19; i++) {
+//                    Element row = rows.get(i);
+//
+//                    Element freq = row.select("td").get(0);
+//                    Element cols = row.select("td").get(1);
+//
+//                    String imgUrl = cols
+//                            .select("img")
+//                            .attr("src");
+//                    String replaceImgUrl = imgUrl.replaceAll("\\.\\.", "");
+//                    String imgUrlCompleted = "http://radiomap.eu" + replaceImgUrl;
+//
+//                    String radioName = cols
+//                            .tagName("station")
+//                            .text();
+//
+//                    String frequency = freq
+//                            .tagName("td")
+//                            .text();
+//
+//                    int maxLength = (radioName.length() < 24)?radioName.length():24;
+//
+//                    parseItems.add(new ParseItem(imgUrlCompleted, radioName.substring(0, maxLength), frequency));
+//                    Log.d("items", "img" + imgUrl + " . title: " + radioName);
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             return null;
         }
     }

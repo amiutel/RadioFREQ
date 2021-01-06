@@ -1,7 +1,9 @@
 package com.application.radiofreq;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,17 +20,23 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ParseAdapter extends RecyclerView.Adapter<ParseAdapter.ViewHolder> implements Filterable {
 
     private ArrayList<ParseItem> parseItems;
     private ArrayList<ParseItem> parseItemsAll;
+    private Set<String> titles = new HashSet<String>();
+    private ArrayList<ParseItem> result = new ArrayList<ParseItem>();
     private Context context;
+    private MenuItem menuItem;
 
     public ParseAdapter(ArrayList<ParseItem> parseItems, Context context) {
         this.parseItems = parseItems;
         this.parseItemsAll = new ArrayList<>(parseItems);
+        this.result = new ArrayList<>(parseItems);
         this.context = context;
     }
 
@@ -41,7 +49,15 @@ public class ParseAdapter extends RecyclerView.Adapter<ParseAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ParseAdapter.ViewHolder holder, int position) {
-        ParseItem parseItem = parseItems.get(position);
+
+        //eliminate duplicate from scraping
+        for (ParseItem parseItem1 : parseItems) {
+            if(titles.add(parseItem1.getTitle())) {
+                result.add(parseItem1);
+            }
+        }
+
+        ParseItem parseItem = result.get(position);
         holder.textViewTitle.setText(parseItem.getTitle());
         holder.textViewFrequency.setText(parseItem.getFrequency());
         if (parseItem.getImgUrl().isEmpty()) {
@@ -54,8 +70,15 @@ public class ParseAdapter extends RecyclerView.Adapter<ParseAdapter.ViewHolder> 
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppCompatActivity activity = (AppCompatActivity) v.getContext();
                 PlayingFragment playingFragment = new PlayingFragment();
+                Bundle args = new Bundle();
+                args.putString("Title", String.valueOf(result.get(position).getTitle()));
+                args.putString("ImageUrl",String.valueOf(result.get(position).getImgUrl()));
+                args.putString("Frequency",String.valueOf(result.get(position).getFrequency()));
+                args.putString("PlayingUrl",String.valueOf(result.get(position).getPlayUrl()));
+                playingFragment.setArguments(args);
+                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+//                PlayingFragment playingFragment = new PlayingFragment();
                 activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, playingFragment).addToBackStack(null).commit();
             }
         });
@@ -63,7 +86,12 @@ public class ParseAdapter extends RecyclerView.Adapter<ParseAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return parseItems.size();
+        for (ParseItem parseItem1 : parseItems) {
+            if(titles.add(parseItem1.getTitle())) {
+                result.add(parseItem1);
+            }
+        }
+        return result.size();
     }
 
     @Override
@@ -77,12 +105,18 @@ public class ParseAdapter extends RecyclerView.Adapter<ParseAdapter.ViewHolder> 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
 
-            parseItemsAll = parseItems;
+            for (ParseItem parseItem1 : parseItems) {
+                if(titles.add(parseItem1.getTitle())) {
+                    result.add(parseItem1);
+                }
+            }
+
+            parseItemsAll = result;
 
             List<ParseItem> filteredArrayList = new ArrayList<>();
 
             if(constraint.toString().isEmpty()) {
-                filteredArrayList.addAll(parseItems);
+                filteredArrayList.addAll(result);
             } else {
                 for(ParseItem p : parseItemsAll) {
                     if(p.getTitle().toLowerCase().contains(constraint.toString().toLowerCase())) {
@@ -101,8 +135,13 @@ public class ParseAdapter extends RecyclerView.Adapter<ParseAdapter.ViewHolder> 
         //runs on a UI thread
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            parseItems.clear();
-            parseItems.addAll((Collection<? extends ParseItem>) results.values);
+            for (ParseItem parseItem1 : parseItems) {
+                if(titles.add(parseItem1.getTitle())) {
+                    result.add(parseItem1);
+                }
+            }
+            result.clear();
+            result.addAll((Collection<? extends ParseItem>) results.values);
             notifyDataSetChanged();
 //            parseItemsAll = (ArrayList<ParseItem>) results.values;
 //            notifyDataSetChanged();
