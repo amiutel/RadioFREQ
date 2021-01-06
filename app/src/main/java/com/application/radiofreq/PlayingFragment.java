@@ -3,7 +3,6 @@ package com.application.radiofreq;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
-import android.media.MediaDataSource;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,18 +32,15 @@ public class PlayingFragment extends Fragment{
 
     TextView playingRadio, playingFrequency;
     ImageView playingImage;
-    public MainActivity activity;
 
     private Button buttonPlay;
     private Button buttonStopPlay;
     private MediaPlayer player;
     boolean paused = true;
-    //String url = "https://myradioonline.ro/magic-fm";
-    String url2 = "http://astreaming.virginradio.ro:8000/VirginRadio_aac";
-    private MediaDataSource mediaDataSource;
+    String url2 = "http://astreaming.virginradio.ro:8000/VirginRadio_aac"; //just for test functionality
 
     public PlayingFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
@@ -119,7 +115,7 @@ public class PlayingFragment extends Fragment{
             public void onClick(View v) {
                 if (paused) {
                     Toast.makeText(getActivity(), "Radio was paused, now is singing", Toast.LENGTH_SHORT).show();
-                    //initializeMediaPlayer();
+                    initializeMediaPlayer();
                     buttonStopPlay.setVisibility(Button.GONE);
                     buttonPlay.setVisibility(Button.VISIBLE);
                     paused = false;
@@ -165,7 +161,7 @@ public class PlayingFragment extends Fragment{
 
         try {
             //change with setDataSource(Context,Uri);
-            player.setDataSource(url2);
+            player.setDataSource(getArguments().getString("PlayingUrl"));
             player.prepareAsync();
             player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 public void onPrepared(MediaPlayer mp) {

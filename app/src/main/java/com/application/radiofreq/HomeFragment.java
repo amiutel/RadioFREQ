@@ -59,7 +59,7 @@ public class HomeFragment extends Fragment implements LocationListener {
     SearchView searchView;
 
     public HomeFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
@@ -94,7 +94,7 @@ public class HomeFragment extends Fragment implements LocationListener {
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new ParseAdapter(parseItems, getActivity()); //??
+        adapter = new ParseAdapter(parseItems, getActivity());
         recyclerView.setAdapter(adapter);
 
         Content content = new Content();
@@ -151,6 +151,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         }
     }
 
+    //used to eliminate accents from location name
     public static String stripAccents(String s)
     {
         s = Normalizer.normalize(s, Normalizer.Form.NFD);

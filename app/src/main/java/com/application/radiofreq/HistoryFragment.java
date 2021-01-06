@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 
 public class HistoryFragment extends Fragment  {
     public HistoryFragment() {
-        // Required empty public constructor
+
     }
 
 

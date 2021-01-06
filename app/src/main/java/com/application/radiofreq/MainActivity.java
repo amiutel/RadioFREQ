@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment selectedFragment = null;
-            MainActivity mainActivity = null;
 
             switch (item.getItemId()) {
                 case R.id.nav_home:

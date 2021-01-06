@@ -3,7 +3,6 @@ package com.application.radiofreq;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -31,7 +30,6 @@ public class ParseAdapter extends RecyclerView.Adapter<ParseAdapter.ViewHolder> 
     private Set<String> titles = new HashSet<String>();
     private ArrayList<ParseItem> result = new ArrayList<ParseItem>();
     private Context context;
-    private MenuItem menuItem;
 
     public ParseAdapter(ArrayList<ParseItem> parseItems, Context context) {
         this.parseItems = parseItems;
@@ -78,7 +76,6 @@ public class ParseAdapter extends RecyclerView.Adapter<ParseAdapter.ViewHolder> 
                 args.putString("PlayingUrl",String.valueOf(result.get(position).getPlayUrl()));
                 playingFragment.setArguments(args);
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
-//                PlayingFragment playingFragment = new PlayingFragment();
                 activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, playingFragment).addToBackStack(null).commit();
             }
         });
